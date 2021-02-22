@@ -26,7 +26,19 @@ const newArticle = (articleData = {}) => {
     })
 }
 
+const delArticle = (id) => {
+    // id就是要删除文章的id
+    const sql = `delete from articles where id='${id}';`
+    return exec(sql).then(delData => {
+        if (delData.affectedRows > 0) {
+            return true
+        }
+        return false
+    })
+}
+
 module.exports = {
     getList,
-    newArticle
+    newArticle,
+    delArticle
 }

@@ -2,7 +2,8 @@ var express = require('express')
 var router = express.Router()
 const {
     getList,
-    newArticle
+    newArticle,
+    delArticle
 } = require('../controller/article')
 const { SuccessModel, ErrorModel } = require('../model/resModel')
 
@@ -22,6 +23,21 @@ router.post('/new', (req, res, next) => {
         res.json(
             new SuccessModel(data)
         )
+    })
+})
+
+router.post('/del', (req, res, next) => {
+    const result = delArticle(req.query.id)
+    return result.then(val => {
+        if (val) {
+            res.json(
+                new SuccessModel()
+            )
+        } else {
+            res.json(
+                new ErrorModel('删除文章失败')
+            )    
+        }
     })
 })
 

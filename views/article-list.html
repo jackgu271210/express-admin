@@ -74,7 +74,7 @@
             </thead>
             <tbody>
             <% movies.forEach(function(item){ %>
-                <tr>
+                <tr id="<%= item.id %>">
                     <td>
                         <input type="checkbox" value="1" name="">
                     </td>
@@ -95,14 +95,11 @@
                         <%= item.create_time %>
                     </td>
                     <td class="td-manage">
-                        <a style="text-decoration:none" onclick="member_stop(this,'10001')" href="javascript:;" title="停用">
-                            <i class="layui-icon">&#xe601;</i>
-                        </a>
                         <a title="编辑" href="javascript:;" onclick="member_edit('编辑','articleadd.html','4','','510')"
                         class="ml-5" style="text-decoration:none">
                             <i class="layui-icon">&#xe642;</i>
                         </a>
-                        <a title="删除" href="javascript:;" onclick="member_del(this,'1')"
+                        <a title="删除" href="javascript:;" onclick="member_del($(this))"
                         style="text-decoration:none">
                             <i class="layui-icon">&#xe640;</i>
                         </a>
@@ -210,11 +207,30 @@
         x_admin_show(title,url,w,h);
     }
     /*用户-删除*/
-    function member_del(obj,id){
+    function member_del(obj){
         layer.confirm('确认要删除吗？',{icon:3,title:'提示信息'},function(index){
-            //发异步删除数据
-            $(obj).parents("tr").remove();
-            layer.msg('已删除!',{icon:1,time:1000});
+            console.log(obj);
+            // console.log(id);
+            var id = obj.parents('tr').attr('id');
+             $.ajax({
+                type:"post",
+                url:"/articles/del",
+                data: {
+                    id:id,
+                },
+                dataType:"json",
+                success:function(data){
+                    if(data.errno==0){
+                        //发异步删除数据
+                        $(obj).parents("tr").remove();
+                        layer.msg('已删除!',{icon:1,time:1000});
+                        return false;
+
+                    }else{
+                        return false;
+                    }
+                }
+            });
         });
     }
 </script>
