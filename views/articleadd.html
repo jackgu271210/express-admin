@@ -11,7 +11,6 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="format-detection" content="telephone=no">
-<link href="http://ueditor.baidu.com/umeditor/themes/default/css/umeditor.min.css" type="text/css" rel="stylesheet">
     <link rel="stylesheet" href="./css/x-admin.css" media="all">
 
     <!--<style>
@@ -19,10 +18,13 @@
         .picture{display: none;}
     </style>-->
 
-    <!--百度编辑器-->
-    <script src="http://ueditor.baidu.com/umeditor/umeditor.config.js"></script>
-    <script src="http://ueditor.baidu.com/umeditor/umeditor.min.js"></script>
-    <script src="http://ueditor.baidu.com/umeditor/lang/zh-cn/zh-cn.js"></script>
+    <!--多文本编辑器-->
+		<script type="text/javascript" charset="utf-8" src="http://localhost:3000/ueditor/ueditor.config.js"></script>
+		<script type="text/javascript" charset="utf-8" src="http://localhost:3000/ueditor/ueditor.all.min.js"> </script>
+		<!--建议手动加在语言，避免在ie下有时因为加载语言失败导致编辑器加载失败-->
+		<!--这里加载的语言文件会覆盖你在配置项目里添加的语言类型，比如你在配置项目里配置的是英文，这里加载的中文，那最后就是中文-->
+		<script type="text/javascript" charset="utf-8" src="http://localhost:3000/ueditor/lang/zh-cn/zh-cn.js"></script>
+		<!--多文本编辑器-->
 </head>
 <body>
 <div class="x-nav">
@@ -64,12 +66,12 @@
                                     class="layui-input">
                             </div>
                         </div>
-                        <div class="layui-form-item">
-                            <label for="link" class="layui-form-label">
-                                <span class="x-red">*</span>新闻内容
-                            </label>
-                            <div class="layui-input-inline">
-                                <textarea  id="content" placeholder="" name="content"></textarea>
+
+                        <div class="layui-form-item layui-form-text">
+                            <label class="layui-form-label">编辑内容</label>
+                            <div class="layui-input-block">
+                                <script id="editor" type="text/plain" style="width:1024px;height:800px;"></script>
+                                <!--<textarea class="layui-textarea layui-hide" name="content" lay-verify="content" id="LAY_demo_editor"></textarea>-->
                             </div>
                         </div>
                         <div class="layui-form-item">
@@ -87,19 +89,14 @@
 </div>
 <script src="./lib/layui/layui.js" charset="utf-8"></script>
 <script src="./js/x-layui.js" charset="utf-8"></script>
-<script type="text/javascript">
-    //实例化编辑器
-    //建议使用工厂方法getEditor创建和引用编辑器实例，如果在某个闭包下引用该编辑器，直接调用UE.getEditor('editor')就能拿到相关的实例
-    UE.getEditor('content',{initialFrameWidth:600,initialFrameHeight:400,});
-</script>
 <script>
-    layui.use(['element','layer','form'], function(){
+    layui.use(['element','layer','form','upload'], function(){
         $ = layui.jquery;//jquery
         lement = layui.element();//面包导航
         layer = layui.layer;//弹出层
         form = layui.form();
 
-
+        var ue = UE.getEditor('editor');
 
         //图片上传接口
         /*layui.upload({
@@ -113,9 +110,10 @@
 
         //监听提交
         form.on('submit(add)', function(data){
+            var type=$("select[name='type']").val();
             var title=$("input[name='title']").val();
-            //var content=$("textarea[name='content']").val();
-
+            // 获取多文本编辑内容
+            var content=UE.getEditor('editor').getContentTxt();
             var article_category_id=$('#article_category_id option:selected') .val();//所属文章类型
             //alert(title);
             //var form=$("#cate_add").serialize();
@@ -125,14 +123,22 @@
             if(article_category_id==""){
                 layer.msg('文章类型不能为空',{icon:5,time:2000});return false;
             }
-            /*if(content){
+            if(!content){
                 layer.msg("文章内容不能为空！",{icon:5,time:2000});return false;
-          }*/
-            var data = data.field;
+            }
+            // var data = data.field;
+            // console.log(data);
+            console.log(type);
+            console.log(title);
+            console.log(content);
             $.ajax({
                 type:"post",
                 url:"/articles/new",
-                data:data,
+                data:{
+                    type,
+                    title,
+                    content
+                },
                 dataType:"json",
                 success:function(data){
                     if(data.errno==0){

@@ -27,7 +27,7 @@ router.post('/new', (req, res, next) => {
 })
 
 router.post('/del', (req, res, next) => {
-    const result = delArticle(req.query.id)
+    const result = delArticle(req.body.id)
     return result.then(val => {
         if (val) {
             res.json(

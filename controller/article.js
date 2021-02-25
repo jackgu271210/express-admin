@@ -13,7 +13,10 @@ const newArticle = (articleData = {}) => {
     const type = (articleData.type)
     const title = xss(articleData.title)
     const content = articleData.content
-    const create_time = moment(Date.now()).format('YYYY-MM-DD HH:mm:ss')
+    // const create_time = moment(Date.now()).format('YYYY-MM-DD HH:mm:ss')
+    const create_time = moment().format('YYYY-MM-DD HH:mm:ss')
+    console.log(create_time)
+    console.log(typeof create_time)
     const sql = `
         insert into articles (type, title, content, create_time)
         values ('${type}','${title}','${content}','${create_time}');
@@ -29,6 +32,8 @@ const newArticle = (articleData = {}) => {
 const delArticle = (id) => {
     // id就是要删除文章的id
     const sql = `delete from articles where id='${id}';`
+    console.log('我进来了')
+    console.log(`${id}`)
     return exec(sql).then(delData => {
         if (delData.affectedRows > 0) {
             return true
